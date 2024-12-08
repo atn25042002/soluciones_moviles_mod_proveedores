@@ -9,15 +9,16 @@ class Pais {
     required this.nombre,
     required this.estadoRegistro,
   });
-  
+
   Map<String, dynamic>? toMap() {
-        return {
+    return {
       'codigo': codigo,
       'nombre': nombre,
       'estadoRegistro': estadoRegistro,
     };
   }
 }
+
 class Proveedor {
   String codigo;
   String nombre;
@@ -36,6 +37,7 @@ class Proveedor {
     required this.estadoRegistro,
   });
 }
+
 class CategoriaProducto {
   String codigo;
   String nombre;
@@ -48,17 +50,31 @@ class CategoriaProducto {
     required this.estadoRegistro,
   });
 }
+
 class DB {
   // Lista simulada de proveedores
   static List<Proveedor> proveedores = [
-    Proveedor(codigo: 'P001', nombre: 'Proveedor 1', ruc: '123456789', categoria: 'Electrónica', pais: 'Perú', estadoRegistro: 'Activo'),
-    Proveedor(codigo: 'P002', nombre: 'Proveedor 2', ruc: '987654321', categoria: 'Alimentos', pais: 'Argentina', estadoRegistro: 'Inactivo'),
+    Proveedor(
+        codigo: 'P001',
+        nombre: 'Proveedor 1',
+        ruc: '123456789',
+        categoria: 'Electrónica',
+        pais: 'Perú',
+        estadoRegistro: 'Activo'),
+    Proveedor(
+        codigo: 'P002',
+        nombre: 'Proveedor 2',
+        ruc: '987654321',
+        categoria: 'Alimentos',
+        pais: 'Argentina',
+        estadoRegistro: 'Inactivo'),
     // Agrega más proveedores según sea necesario
   ];
 
   // Lista simulada de categorías de productos
   static List<CategoriaProducto> categorias = [
-    CategoriaProducto(codigo: 'C001', nombre: 'Electrónica', estadoRegistro: 'Activo'),
+    CategoriaProducto(
+        codigo: 'C001', nombre: 'Electrónica', estadoRegistro: 'Activo'),
     CategoriaProducto(codigo: 'C002', nombre: 'Ropa', estadoRegistro: 'Activo'),
     // Agrega más categorías según sea necesario
   ];
@@ -74,7 +90,8 @@ class DB {
   }
 
   // Método para actualizar el estado de registro de un proveedor
-  static void actualizarEstadoRegistroProveedor(String codigo, String nuevoEstado) {
+  static void actualizarEstadoRegistroProveedor(
+      String codigo, String nuevoEstado) {
     for (var proveedor in proveedores) {
       if (proveedor.codigo == codigo) {
         proveedor.estadoRegistro = nuevoEstado;
@@ -99,7 +116,8 @@ class DB {
   }
 
   // Método para actualizar el estado de registro de una categoría
-  static void actualizarEstadoRegistroCategoria(String codigo, String nuevoEstado) {
+  static void actualizarEstadoRegistroCategoria(
+      String codigo, String nuevoEstado) {
     for (var categoria in categorias) {
       if (categoria.codigo == codigo) {
         categoria.estadoRegistro = nuevoEstado;
@@ -112,10 +130,6 @@ class DB {
   static void eliminarCategoria(String codigo) {
     categorias.removeWhere((categoria) => categoria.codigo == codigo);
   }
-  
-
-
-
 
   // Lista simulada de países
   static List<Pais> paises = [
@@ -151,16 +165,13 @@ class DB {
   static void eliminarPais(String codigo) {
     paises.removeWhere((pais) => pais.codigo == codigo);
   }
-    // Método para obtener un país dado su código y devolverlo como un mapa
+
+  // Método para obtener un país dado su código y devolverlo como un mapa
   static Map<String, dynamic>? obtenerPaisPorCodigo(String codigo) {
-      // Si el código es -1, devolver un mapa con claves y valores vacíos
-  if (codigo == '-1') {
-    return {
-      'codigo': '',
-      'nombre': '',
-      'estadoRegistro': ''
-    };
-  }
+    // Si el código es -1, devolver un mapa con claves y valores vacíos
+    if (codigo == '-1') {
+      return {'codigo': '', 'nombre': '', 'estadoRegistro': ''};
+    }
 
     // Buscar y devolver el país cuyo código coincida, convertido a mapa
     for (var pais in paises) {
@@ -169,5 +180,55 @@ class DB {
       }
     }
     return null; // Si no se encuentra el país, devolver null
+  }
+
+  // Método para obtener un proveedor dado su código
+  static Map<String, dynamic>? obtenerProveedorPorCodigo(String codigo) {
+    // Si el código es '-1', devolver un mapa con claves y valores vacíos
+    if (codigo == '-1') {
+      return {
+        'codigo': '',
+        'nombre': '',
+        'ruc': '',
+        'categoria': '',
+        'pais': '',
+        'estadoRegistro': ''
+      };
+    }
+
+    // Buscar y devolver el proveedor cuyo código coincida, convertido a mapa
+    for (var proveedor in proveedores) {
+      if (proveedor.codigo == codigo) {
+        return {
+          'codigo': proveedor.codigo,
+          'nombre': proveedor.nombre,
+          'ruc': proveedor.ruc,
+          'categoria': proveedor.categoria,
+          'pais': proveedor.pais,
+          'estadoRegistro': proveedor.estadoRegistro
+        };
+      }
+    }
+    return null; // Si no se encuentra el proveedor, devolver null
+  }
+
+// Método para obtener una categoría dada su código
+  static Map<String, dynamic>? obtenerCategoriaPorCodigo(String codigo) {
+    // Si el código es '-1', devolver un mapa con claves y valores vacíos
+    if (codigo == '-1') {
+      return {'codigo': '', 'nombre': '', 'estadoRegistro': ''};
+    }
+
+    // Buscar y devolver la categoría cuyo código coincida, convertida a mapa
+    for (var categoria in categorias) {
+      if (categoria.codigo == codigo) {
+        return {
+          'codigo': categoria.codigo,
+          'nombre': categoria.nombre,
+          'estadoRegistro': categoria.estadoRegistro
+        };
+      }
+    }
+    return null; // Si no se encuentra la categoría, devolver null
   }
 }

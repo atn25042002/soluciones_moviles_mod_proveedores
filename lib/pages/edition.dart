@@ -25,6 +25,11 @@ class Edition extends StatelessWidget {
       switch (nombreTabla) {
         case 'Paises':
           camposRecuperados = DB.obtenerPaisPorCodigo(codigo) ?? {};
+        case 'Proveedores':
+          camposRecuperados = DB.obtenerProveedorPorCodigo(codigo)??{};
+        case 'Categorias':
+          camposRecuperados= DB.obtenerCategoriaPorCodigo(codigo)??{};
+
           break;
         default:
           camposRecuperados = {}; // Valor por defecto si no hay coincidencias
