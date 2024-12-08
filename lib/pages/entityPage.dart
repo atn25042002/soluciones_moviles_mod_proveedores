@@ -59,8 +59,8 @@ class Entitypage extends StatelessWidget {
           ),
 
           // Título debajo de la barra de búsqueda
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0),
+          const Padding(
+            padding: EdgeInsets.symmetric(horizontal: 16.0),
             child: Text(
               'Lista de Proveedores',
               style: TextStyle(
