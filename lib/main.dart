@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:soluciones_moviles_mod_proveedores/components/roundedBox.dart';
 import 'package:soluciones_moviles_mod_proveedores/components/roundedButton.dart';
+import 'package:soluciones_moviles_mod_proveedores/database/database_helper.dart';
 import 'package:soluciones_moviles_mod_proveedores/pages/entityPage.dart';
 
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
+  final dbhelper = DatabaseHelper();
   runApp(const MainApp());
 }
 
@@ -13,7 +15,8 @@ class MainApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      debugShowCheckedModeBanner: false,
+
+      debugShowCheckedModeBanner: false;
       home: const HomePage(),
       theme: ThemeData(
         fontFamily: 'Roboto',
