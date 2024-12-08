@@ -71,10 +71,10 @@ class Entitypage extends StatelessWidget {
 
           // Título debajo de la barra de búsqueda
           Padding(
-            padding: EdgeInsets.symmetric(horizontal: 16.0),
+            padding: const EdgeInsets.symmetric(horizontal: 16.0),
             child: Text(
               "Lista de $nombre",
-              style: TextStyle(
+              style: const TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
               ),
@@ -98,7 +98,7 @@ class Entitypage extends StatelessWidget {
                         onPressed: (){
                           Navigator.push(context, MaterialPageRoute(builder: (context)=>Edition(nombreTabla: nombre, codigo: elemtno.codigo,edicion: true,)));
                         },
-                       icon: Icon(Icons.edit))
+                       icon: const Icon(Icons.edit))
                       ])
                       ],
                   );
@@ -121,9 +121,9 @@ class Entitypage extends StatelessWidget {
               ),
             ),
           );
-        },
-        child: Icon(Icons.add), // Icono del botón flotante
-        backgroundColor: color, // Color del botón flotante
+        }, // Icono del botón flotante
+        backgroundColor: color,
+        child: Icon(Icons.add), // Color del botón flotante
       ),
     );
   }

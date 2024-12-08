@@ -12,9 +12,9 @@ class Pais {
   
   Map<String, dynamic>? toMap() {
         return {
-      'codigo': this.codigo,
-      'nombre': this.nombre,
-      'estadoRegistro': this.estadoRegistro,
+      'codigo': codigo,
+      'nombre': nombre,
+      'estadoRegistro': estadoRegistro,
     };
   }
 }
