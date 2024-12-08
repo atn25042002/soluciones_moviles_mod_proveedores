@@ -4,26 +4,32 @@ import 'package:soluciones_moviles_mod_proveedores/DB/db.dart';
 class Edition extends StatelessWidget {
   final String nombreTabla;
   final String codigo;
+  final bool edicion;
 
   // Constructor para recibir los parámetros
-  const Edition({Key? key, required this.nombreTabla, required this.codigo}) : super(key: key);
+  const Edition(
+      {Key? key,
+      required this.nombreTabla,
+      required this.codigo,
+      required this.edicion})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     // Aquí podrías obtener los valores de la tabla según el codigo
     // Por ejemplo, podrías usar el codigo para acceder a los datos específicos del registro
     // En este caso, estoy usando datos de ejemplo.
-    
-    // Simulación de campos de la tabla
-    final Map<String,dynamic> camposRecuperados;
-      switch (nombreTabla) {
-      case 'Paises':
-        camposRecuperados = DB.obtenerPaisPorCodigo(codigo) ?? {};
-        break;
-        default:
-        camposRecuperados = {}; // Valor por defecto si no hay coincidencias
-    }
 
+    // Simulación de campos de la tabla
+    final Map<String, dynamic> camposRecuperados;
+      switch (nombreTabla) {
+        case 'Paises':
+          camposRecuperados = DB.obtenerPaisPorCodigo(codigo) ?? {};
+          break;
+        default:
+          camposRecuperados = {}; // Valor por defecto si no hay coincidencias
+      }
+      print(camposRecuperados);
     return Scaffold(
       appBar: AppBar(
         title: Text(nombreTabla), // Mostrar el nombre de la tabla en el AppBar
@@ -35,7 +41,7 @@ class Edition extends StatelessWidget {
           children: [
             // Título de la edición de la tabla
             Text(
-              'Edición de $nombreTabla',
+              edicion ? 'Edición de $nombreTabla' : 'Agregar $nombreTabla',
               style: TextStyle(
                 fontSize: 24,
                 fontWeight: FontWeight.bold,

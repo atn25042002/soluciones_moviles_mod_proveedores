@@ -96,7 +96,7 @@ class Entitypage extends StatelessWidget {
                       Text(elemtno.estadoRegistro),
                       IconButton(
                         onPressed: (){
-                          Navigator.push(context, MaterialPageRoute(builder: (context)=>Edition(nombreTabla: nombre, codigo: elemtno.codigo)));
+                          Navigator.push(context, MaterialPageRoute(builder: (context)=>Edition(nombreTabla: nombre, codigo: elemtno.codigo,edicion: true,)));
                         },
                        icon: Icon(Icons.edit))
                       ])
@@ -106,6 +106,24 @@ class Entitypage extends StatelessWidget {
             ),
           ),
         ],
+      ),
+            // Agregar FloatingActionButton aquí
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          // Redirigir a la página de edición en modo "crear"
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => Edition(
+                nombreTabla: nombre,
+                codigo: '-1', // Código especial para indicar que es un nuevo registro
+                edicion: false, // No es edición, es creación
+              ),
+            ),
+          );
+        },
+        child: Icon(Icons.add), // Icono del botón flotante
+        backgroundColor: color, // Color del botón flotante
       ),
     );
   }

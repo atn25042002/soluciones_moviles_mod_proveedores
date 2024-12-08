@@ -153,6 +153,15 @@ class DB {
   }
     // Método para obtener un país dado su código y devolverlo como un mapa
   static Map<String, dynamic>? obtenerPaisPorCodigo(String codigo) {
+      // Si el código es -1, devolver un mapa con claves y valores vacíos
+  if (codigo == '-1') {
+    return {
+      'codigo': '',
+      'nombre': '',
+      'estadoRegistro': ''
+    };
+  }
+
     // Buscar y devolver el país cuyo código coincida, convertido a mapa
     for (var pais in paises) {
       if (pais.codigo == codigo) {
