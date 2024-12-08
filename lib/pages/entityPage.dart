@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:soluciones_moviles_mod_proveedores/DB/db.dart';
+import 'package:soluciones_moviles_mod_proveedores/pages/edition.dart';
 
 class Entitypage extends StatelessWidget {
   final String nombre;
@@ -8,14 +10,23 @@ class Entitypage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Lista de proveedores
-    final List<String> elementos = [
-      '$nombre A',
-      '$nombre B',
-      '$nombre C',
-      '$nombre D',
-      '$nombre E',
-    ];
+    // Lista de elementos a mostrar
+    List<dynamic> elementos;
+    switch (nombre) {
+      case 'Paises':
+        elementos = DB.obtenerPaises();
+        break;
+      case 'Proveedores':
+        elementos = DB.obtenerProveedores();
+        break;
+      case 'Categorias':
+        elementos = DB.obtenerCategorias();
+        break;
+      default:
+        elementos = [];
+        break;
+    }
+    print(elementos);
 
     return Scaffold(
       appBar: AppBar(
@@ -62,8 +73,8 @@ class Entitypage extends StatelessWidget {
           const Padding(
             padding: EdgeInsets.symmetric(horizontal: 16.0),
             child: Text(
-              'Lista de Proveedores',
-              style: TextStyle(
+              "Lista de $nombre",
+              style: const TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
               ),
@@ -75,13 +86,44 @@ class Entitypage extends StatelessWidget {
             child: ListView.builder(
               itemCount: elementos.length,
               itemBuilder: (context, index) {
-                return ListTile(
-                  title: Text(elementos[index]),
-                );
+                var elemtno = elementos[index];
+                return ExpansionTile(
+                  title: Text(elemtno.nombre),
+                  children: <Widget>[Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(elemtno.codigo),
+                      Text(elemtno.estadoRegistro),
+                      IconButton(
+                        onPressed: (){
+                          Navigator.push(context, MaterialPageRoute(builder: (context)=>Edition(nombreTabla: nombre, codigo: elemtno.codigo,edicion: true,)));
+                        },
+                       icon: const Icon(Icons.edit))
+                      ])
+                      ],
+                  );
               },
             ),
           ),
         ],
+      ),
+            // Agregar FloatingActionButton aquí
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          // Redirigir a la página de edición en modo "crear"
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => Edition(
+                nombreTabla: nombre,
+                codigo: '-1', // Código especial para indicar que es un nuevo registro
+                edicion: false, // No es edición, es creación
+              ),
+            ),
+          );
+        }, // Icono del botón flotante
+        backgroundColor: color,
+        child: Icon(Icons.add), // Color del botón flotante
       ),
     );
   }
