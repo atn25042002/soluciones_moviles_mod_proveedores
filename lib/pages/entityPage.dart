@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:soluciones_moviles_mod_proveedores/DB/db.dart';
 
 class Entitypage extends StatelessWidget {
   final String nombre;
@@ -8,14 +9,23 @@ class Entitypage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Lista de proveedores
-    final List<String> elementos = [
-      '$nombre A',
-      '$nombre B',
-      '$nombre C',
-      '$nombre D',
-      '$nombre E',
-    ];
+    // Lista de elementos a mostrar
+    List<dynamic> elementos;
+    switch (nombre) {
+      case 'Paises':
+        elementos = DB.obtenerPaises();
+        break;
+      case 'Proveedores':
+        elementos = DB.obtenerProveedores();
+        break;
+      case 'Categorias':
+        elementos = DB.obtenerCategorias();
+        break;
+      default:
+        elementos = [];
+        break;
+    }
+    print(elementos);
 
     return Scaffold(
       appBar: AppBar(
@@ -60,9 +70,9 @@ class Entitypage extends StatelessWidget {
 
           // Título debajo de la barra de búsqueda
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0),
+            padding: EdgeInsets.symmetric(horizontal: 16.0),
             child: Text(
-              'Lista de Proveedores',
+              "Lista de $nombre",
               style: TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
@@ -75,8 +85,9 @@ class Entitypage extends StatelessWidget {
             child: ListView.builder(
               itemCount: elementos.length,
               itemBuilder: (context, index) {
+                print(elementos);
                 return ListTile(
-                  title: Text(elementos[index]),
+                  title: Text(elementos[index].nombre),
                 );
               },
             ),
