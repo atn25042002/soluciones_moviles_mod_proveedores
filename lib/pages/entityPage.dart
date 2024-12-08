@@ -85,10 +85,13 @@ class Entitypage extends StatelessWidget {
             child: ListView.builder(
               itemCount: elementos.length,
               itemBuilder: (context, index) {
-                print(elementos);
-                return ListTile(
-                  title: Text(elementos[index].nombre),
-                );
+                var elemtno = elementos[index];
+                return ExpansionTile(
+                  title: Text(elemtno.nombre),
+                  children: <Widget>[Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [Text(elemtno.codigo),Text(elemtno.estadoRegistro),Icon(Icons.edit)])],
+                  );
               },
             ),
           ),
