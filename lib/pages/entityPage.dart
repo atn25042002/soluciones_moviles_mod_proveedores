@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:soluciones_moviles_mod_proveedores/DB/db.dart';
+import 'package:soluciones_moviles_mod_proveedores/pages/edition.dart';
 
 class Entitypage extends StatelessWidget {
   final String nombre;
@@ -90,7 +91,16 @@ class Entitypage extends StatelessWidget {
                   title: Text(elemtno.nombre),
                   children: <Widget>[Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [Text(elemtno.codigo),Text(elemtno.estadoRegistro),Icon(Icons.edit)])],
+                    children: [
+                      Text(elemtno.codigo),
+                      Text(elemtno.estadoRegistro),
+                      IconButton(
+                        onPressed: (){
+                          Navigator.push(context, MaterialPageRoute(builder: (context)=>Edition(nombreTabla: nombre, codigo: elemtno.codigo)));
+                        },
+                       icon: Icon(Icons.edit))
+                      ])
+                      ],
                   );
               },
             ),

@@ -9,6 +9,14 @@ class Pais {
     required this.nombre,
     required this.estadoRegistro,
   });
+  
+  Map<String, dynamic>? toMap() {
+        return {
+      'codigo': this.codigo,
+      'nombre': this.nombre,
+      'estadoRegistro': this.estadoRegistro,
+    };
+  }
 }
 class Proveedor {
   String codigo;
@@ -104,6 +112,11 @@ class DB {
   static void eliminarCategoria(String codigo) {
     categorias.removeWhere((categoria) => categoria.codigo == codigo);
   }
+  
+
+
+
+
   // Lista simulada de países
   static List<Pais> paises = [
     Pais(codigo: 'PE', nombre: 'Perú', estadoRegistro: 'Activo'),
@@ -137,5 +150,15 @@ class DB {
   // Método para eliminar un país
   static void eliminarPais(String codigo) {
     paises.removeWhere((pais) => pais.codigo == codigo);
+  }
+    // Método para obtener un país dado su código y devolverlo como un mapa
+  static Map<String, dynamic>? obtenerPaisPorCodigo(String codigo) {
+    // Buscar y devolver el país cuyo código coincida, convertido a mapa
+    for (var pais in paises) {
+      if (pais.codigo == codigo) {
+        return pais.toMap(); // Convertimos el objeto Pais en un mapa
+      }
+    }
+    return null; // Si no se encuentra el país, devolver null
   }
 }
