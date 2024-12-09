@@ -76,6 +76,13 @@ class DatabaseHelper {
         conflictAlgorithm: ConflictAlgorithm.replace);
   }
 
+  // Insertar un registro (generalizado)
+  Future<void> insertRecord(String table, Map<String, dynamic> values) async {
+    final db = await database;
+    await db.insert(table, values,
+        conflictAlgorithm: ConflictAlgorithm.replace);
+  }
+
   // Actualizar un registro (generalizado)
   Future<void> updateRecord(
       String table, int id, Map<String, dynamic> values) async {
@@ -120,5 +127,14 @@ class DatabaseHelper {
       where: 'id = ?',
       whereArgs: [id],
     );
+  }
+
+  Future<List<Map<String, dynamic>>> getFieldsAndForeignKeys(
+      String table) async {
+    final db = await database;
+    // Obtener los campos de la tabla con sus tipos de datos
+    List<Map<String, dynamic>> fields =
+        await db.rawQuery('PRAGMA table_info($table);');
+    return fields;
   }
 }

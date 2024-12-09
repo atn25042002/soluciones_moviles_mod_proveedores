@@ -1,129 +1,168 @@
 import 'package:flutter/material.dart';
-import 'package:soluciones_moviles_mod_proveedores/DB/db.dart';
+import 'package:soluciones_moviles_mod_proveedores/database/database_helper.dart';
 import 'package:soluciones_moviles_mod_proveedores/pages/edition.dart';
 
-class Entitypage extends StatelessWidget {
+class EntityPage extends StatefulWidget {
   final String nombre;
   final Color color;
 
-  const Entitypage({super.key, required this.nombre, required this.color});
+  const EntityPage({super.key, required this.nombre, required this.color});
+
+  @override
+  _EntityPageState createState() => _EntityPageState();
+}
+
+class _EntityPageState extends State<EntityPage> {
+  List<Map<String, dynamic>> elementos = [];
+  String tabla = "";
+  bool isLoading = true;
+  final dbHelper = DatabaseHelper();
+
+  @override
+  void initState() {
+    super.initState();
+    _loadData();
+  }
+
+  Future<void> _loadData() async {
+    List<Map<String, dynamic>> data;
+    String nombretabla;
+    switch (widget.nombre) {
+      case 'Paises':
+        nombretabla = "Paises";
+        data = await dbHelper.getAllRecords("Paises");
+        break;
+      case 'Proveedores':
+        nombretabla = "MaestroProveedores";
+        data = await dbHelper.getAllRecords("MaestroProveedores");
+        break;
+      case 'Categorias':
+        nombretabla = "CategoriasProductos";
+        data = await dbHelper.getAllRecords("CategoriasProductos");
+        break;
+      default:
+        nombretabla = "";
+        data = [];
+        break;
+    }
+    setState(() {
+      elementos = data;
+      tabla = nombretabla;
+      isLoading = false;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
-    // Lista de elementos a mostrar
-    List<dynamic> elementos;
-    switch (nombre) {
-      case 'Paises':
-        elementos = DB.obtenerPaises();
-        break;
-      case 'Proveedores':
-        elementos = DB.obtenerProveedores();
-        break;
-      case 'Categorias':
-        elementos = DB.obtenerCategorias();
-        break;
-      default:
-        elementos = [];
-        break;
-    }
-    print(elementos);
-
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          nombre,
+          widget.nombre,
           style: const TextStyle(
             fontSize: 25,
             fontWeight: FontWeight.bold,
-            color: Color.fromARGB(255, 0, 0, 0), // Color del texto
+            color: Color.fromARGB(255, 0, 0, 0),
           ),
         ),
-        centerTitle: true, // Centra el título
-        backgroundColor: color, // Cambia el color de fondo
+        centerTitle: true,
+        backgroundColor: widget.color,
         toolbarHeight: 60.0,
       ),
-      body: Column(
-        children: [
-          // Barra de búsqueda con ícono de filtro
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Row(
+      body: isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : Column(
               children: [
-                Expanded(
-                  child: TextField(
-                    decoration: InputDecoration(
-                      hintText: "Buscar $nombre...",
-                      border: const OutlineInputBorder(),
-                    ),
-                    cursorHeight: 10,
+                // Barra de búsqueda
+                Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: TextField(
+                          decoration: InputDecoration(
+                            hintText: "Buscar ${widget.nombre}...",
+                            border: const OutlineInputBorder(),
+                          ),
+                        ),
+                      ),
+                      IconButton(
+                        icon: const Icon(Icons.filter_alt_sharp),
+                        onPressed: () {
+                          print('Filtro activado');
+                        },
+                      ),
+                    ],
                   ),
                 ),
-                IconButton(
-                  icon: const Icon(Icons.filter_alt_sharp),
-                  onPressed: () {
-                    // Lógica de filtros aquí
-                    print('Filtro activado');
-                  },
+
+                // Título debajo de la barra de búsqueda
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                  child: Text(
+                    "Lista de ${widget.nombre}",
+                    style: const TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+
+                // ListView que muestra los datos
+                Expanded(
+                  child: ListView.builder(
+                    itemCount: elementos.length,
+                    itemBuilder: (context, index) {
+                      var elemento = elementos[index];
+                      return ExpansionTile(
+                        title: Text(elemento['nombre']),
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text('Código: ${elemento['codigo']}'),
+                              Text(
+                                  'Estado: ${elemento['estado_registro'] == 1 ? 'Activo' : 'Inactivo'}'),
+                              IconButton(
+                                onPressed: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => Edition(
+                                        nombreTabla: tabla,
+                                        id: elemento['id'],
+                                        edicion: true,
+                                      ),
+                                    ),
+                                  );
+                                },
+                                icon: const Icon(Icons.edit),
+                              ),
+                            ],
+                          ),
+                        ],
+                      );
+                    },
+                  ),
                 ),
               ],
             ),
-          ),
 
-          // Título debajo de la barra de búsqueda
-          Padding(
-            padding: EdgeInsets.symmetric(horizontal: 16.0),
-            child: Text(
-              "Lista de $nombre",
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ),
-
-          // ListView que muestra la lista de proveedores
-          Expanded(
-            child: ListView.builder(
-              itemCount: elementos.length,
-              itemBuilder: (context, index) {
-                var elemtno = elementos[index];
-                return ExpansionTile(
-                  title: Text(elemtno.nombre),
-                  children: <Widget>[Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(elemtno.codigo),
-                      Text(elemtno.estadoRegistro),
-                      IconButton(
-                        onPressed: (){
-                          Navigator.push(context, MaterialPageRoute(builder: (context)=>Edition(nombreTabla: nombre, codigo: elemtno.codigo,edicion: true,)));
-                        },
-                       icon: const Icon(Icons.edit))
-                      ])
-                      ],
-                  );
-              },
-            ),
-          ),
-        ],
-      ),
-            // Agregar FloatingActionButton aquí
+      // Botón flotante para agregar un nuevo registro
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          // Redirigir a la página de edición en modo "crear"
           Navigator.push(
             context,
             MaterialPageRoute(
               builder: (context) => Edition(
-                nombreTabla: nombre,
-                codigo: '-1', // Código especial para indicar que es un nuevo registro
-                edicion: false, // No es edición, es creación
+                nombreTabla: tabla,
+                id: -1,
+                edicion: false,
               ),
             ),
           );
-        }, // Icono del botón flotante
-        backgroundColor: color,
-        child: const Icon(Icons.add), // Color del botón flotante
+        },
+        backgroundColor: widget.color,
+        child: const Icon(Icons.add),
       ),
     );
   }

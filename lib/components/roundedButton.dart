@@ -26,7 +26,7 @@ class RoundedButton extends StatelessWidget {
         Navigator.push(
           context,
           MaterialPageRoute(
-              builder: (context) => Entitypage(nombre: nombre, color: color)),
+              builder: (context) => EntityPage(nombre: nombre, color: color)),
         );
       },
       child: Text(

@@ -1,3 +1,4 @@
 {
-    "cmake.sourceDirectory": "C:/Users/kevinlokaso/ne/soluciones_moviles_mod_proveedores/linux"
+    "cmake.sourceDirectory": "C:/Users/kevinlokaso/ne/soluciones_moviles_mod_proveedores/linux",
+    "java.configuration.updateBuildConfiguration": "interactive"
 }
