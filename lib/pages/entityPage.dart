@@ -70,11 +70,11 @@ class Entitypage extends StatelessWidget {
           ),
 
           // Título debajo de la barra de búsqueda
-          const Padding(
+          Padding(
             padding: EdgeInsets.symmetric(horizontal: 16.0),
             child: Text(
               "Lista de $nombre",
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
               ),
@@ -123,7 +123,7 @@ class Entitypage extends StatelessWidget {
           );
         }, // Icono del botón flotante
         backgroundColor: color,
-        child: Icon(Icons.add), // Color del botón flotante
+        child: const Icon(Icons.add), // Color del botón flotante
       ),
     );
   }
