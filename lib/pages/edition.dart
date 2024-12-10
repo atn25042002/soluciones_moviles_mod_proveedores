@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:soluciones_moviles_mod_proveedores/components/dropDownList.dart';
 import 'package:soluciones_moviles_mod_proveedores/database/database_helper.dart';
 
 class Edition extends StatefulWidget {
@@ -19,7 +20,7 @@ class Edition extends StatefulWidget {
 }
 
 class _EditionState extends State<Edition> {
-  late Map<String, TextEditingController> controllers;
+  late Map<String, dynamic> controllers;
   late Map<String, dynamic> camposRecuperados = {};
   late List<String> camposTabla =
       []; // Para guardar los campos y claves foráneas de la tabla
@@ -48,14 +49,22 @@ class _EditionState extends State<Edition> {
             await dbHelper.getRecordById(widget.nombreTabla, widget.id) ?? {};
         // Crear controladores con los valores existentes
         for (var campo in camposTabla) {
-          controllers[campo] = TextEditingController(
-              text: camposRecuperados[campo]?.toString() ?? '');
+          if (campo.endsWith("_id")) {
+            controllers[campo] = camposRecuperados[campo]?.toString() ?? '';
+          } else {
+            controllers[campo] = TextEditingController(
+                text: camposRecuperados[campo]?.toString() ?? '');
+          }
         }
       } else {
         print("3");
         // En modo creación, los campos estarán vacíos
         for (var campo in camposTabla) {
-          controllers[campo] = TextEditingController(text: '');
+          if (campo.endsWith("_id")) {
+            controllers[campo] = "";
+          } else {
+            controllers[campo] = TextEditingController(text: '');
+          }
         }
         print("4");
       }
@@ -72,7 +81,11 @@ class _EditionState extends State<Edition> {
   void grabarCambios() async {
     Map<String, dynamic> nuevosValores = {};
     controllers.forEach((key, controller) {
-      nuevosValores[key] = controller.text;
+      if (controller is TextEditingController) {
+        nuevosValores[key] = controller.text;
+      } else {
+        nuevosValores[key] = controller;
+      }
     });
     print("los valores a guarda son");
     print(nuevosValores);
@@ -84,18 +97,19 @@ class _EditionState extends State<Edition> {
         const SnackBar(content: Text('Registro actualizado correctamente')),
       );
     } else {
-      nuevosValores['estado_registro']='A';
+      nuevosValores['estado_registro'] = 'A';
       // Insertar un nuevo registro
       await dbHelper.insertRecord(widget.nombreTabla, nuevosValores);
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Registro creado correctamente')),
       );
     }
-    Navigator.pop(context,true);
+    Navigator.pop(context, true);
   }
-  void eliminarRecord() async{
-    await dbHelper.changeRecordState(widget.nombreTabla, widget.id,"*" );
-    Navigator.pop(context,true);
+
+  void eliminarRecord() async {
+    await dbHelper.changeRecordState(widget.nombreTabla, widget.id, "*");
+    Navigator.pop(context, true);
   }
 
   @override
@@ -126,26 +140,47 @@ class _EditionState extends State<Edition> {
                   // Formulario dinámico
                   Expanded(
                     child: ListView(
-                      children: (!widget.edicion ? camposTabla.sublist(0, camposTabla.length - 1) : camposTabla).map((campo) {
+                      children: (!widget.edicion
+                              ? camposTabla.sublist(0, camposTabla.length - 1)
+                              : camposTabla)
+                          .map((campo) {
                         return Padding(
                           padding: const EdgeInsets.symmetric(vertical: 8.0),
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              Text(campo, style: const TextStyle(fontSize: 16)),
+                              Text(
+                                  campo.endsWith('_id')
+                                      ? campo.substring(0, campo.length - 3)
+                                      : campo,
+                                  style: const TextStyle(fontSize: 16)),
+                              const SizedBox(width: 20),
                               Expanded(
-                                child: TextField(
-                                  controller: controllers[campo],
-                                  decoration: InputDecoration(
-                                    border: const OutlineInputBorder(),
-                                    hintText: widget.edicion
-                                        ? camposRecuperados[campo]
-                                                ?.toString() ??
-                                            ''
-                                        : '',
-                                  ),
-                                ),
-                              ),
+                                  child: controllers[campo]
+                                          is TextEditingController
+                                      ? TextField(
+                                          controller: controllers[campo],
+                                          decoration: InputDecoration(
+                                            border: const OutlineInputBorder(),
+                                            hintText: widget.edicion
+                                                ? camposRecuperados[campo]
+                                                        ?.toString() ??
+                                                    ''
+                                                : '',
+                                          ),
+                                        )
+                                      : DropdownList(
+                                          tableName: dbHelper.getNombreTablas(
+                                              campo.substring(
+                                                  0, campo.length - 3)),
+                                          onValueChanged: (selectedId) {
+                                            controllers[campo] = selectedId;
+                                          },
+                                          initialValue: widget.edicion
+                                              ? camposRecuperados[campo]
+                                                  .toString()
+                                              : null,
+                                        )),
                             ],
                           ),
                         );
@@ -167,10 +202,12 @@ class _EditionState extends State<Edition> {
                         },
                         child: const Text('Salir'),
                       ),
-                      if(widget.edicion)
-                      ElevatedButton(onPressed: (){
-                          eliminarRecord();
-                      }, child: const Text("Eliminar"))
+                      if (widget.edicion)
+                        ElevatedButton(
+                            onPressed: () {
+                              eliminarRecord();
+                            },
+                            child: const Text("Eliminar"))
                     ],
                   ),
                 ],
