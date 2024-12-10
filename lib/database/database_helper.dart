@@ -118,12 +118,13 @@ class DatabaseHelper {
 
 // Ver todos los registros (filtrados por estado si es necesario)
   Future<List<Map<String, dynamic>>> getAllRecords(String table,
-      {String? estadoRegistro}) async {
+      {String? estadoRegistro, String? orden}) async {
     final db = await database;
     return await db.query(
       table,
       where: estadoRegistro != null ? 'estado_registro = ?' : null,
       whereArgs: estadoRegistro != null ? [estadoRegistro] : null,
+      orderBy: orden,
     );
   }
 

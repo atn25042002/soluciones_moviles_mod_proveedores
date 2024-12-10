@@ -14,43 +14,62 @@ class EntityPage extends StatefulWidget {
 
 class _EntityPageState extends State<EntityPage> {
   List<Map<String, dynamic>> elementos = [];
+  List<Map<String, dynamic>> filteredElements = []; // Lista filtrada
   String tabla = "";
   bool isLoading = true;
   final dbHelper = DatabaseHelper();
+  final TextEditingController searchController =
+      TextEditingController(); // Controlador de búsqueda
 
   @override
   void initState() {
     super.initState();
     _loadData();
+    searchController.addListener(
+        _filterList); // Agregar listener al controlador de búsqueda
   }
 
   Future<void> _loadData() async {
     List<Map<String, dynamic>> data;
-    print("todo esto se cargara");
     String nombretabla;
     switch (widget.nombre) {
       case 'Paises':
         nombretabla = "Paises";
-        data = await dbHelper.getAllRecords("Paises");
+        data = await dbHelper.getAllRecords("Paises", orden: "nombre");
         break;
       case 'Proveedores':
         nombretabla = "MaestroProveedores";
-        data = await dbHelper.getAllRecords("MaestroProveedores");
+        data =
+            await dbHelper.getAllRecords("MaestroProveedores", orden: "nombre");
         break;
       case 'Categorias':
         nombretabla = "CategoriasProductos";
-        data = await dbHelper.getAllRecords("CategoriasProductos");
+        data = await dbHelper.getAllRecords("CategoriasProductos",
+            orden: "nombre");
         break;
       default:
         nombretabla = "";
         data = [];
         break;
     }
-    print(data);
     setState(() {
       elementos = data;
+      filteredElements =
+          data; // Inicialmente, la lista filtrada es igual a la lista completa
       tabla = nombretabla;
       isLoading = false;
+    });
+  }
+
+  // Método para filtrar la lista según lo que escribe el usuario
+  void _filterList() {
+    String query = searchController.text.toLowerCase();
+    setState(() {
+      filteredElements = elementos.where((elemento) {
+        return elemento['nombre']
+            .toLowerCase()
+            .contains(query); // Filtra por el nombre
+      }).toList();
     });
   }
 
@@ -77,23 +96,14 @@ class _EntityPageState extends State<EntityPage> {
                 // Barra de búsqueda
                 Padding(
                   padding: const EdgeInsets.all(16.0),
-                  child: Row(
-                    children: [
-                      Expanded(
-                        child: TextField(
-                          decoration: InputDecoration(
-                            hintText: "Buscar ${widget.nombre}...",
-                            border: const OutlineInputBorder(),
-                          ),
-                        ),
+                  child: Expanded(
+                    child: TextField(
+                      controller: searchController, // Asocia el controlador
+                      decoration: InputDecoration(
+                        hintText: "🔍 Buscar ${widget.nombre}...",
+                        border: const OutlineInputBorder(),
                       ),
-                      IconButton(
-                        icon: const Icon(Icons.filter_alt_sharp),
-                        onPressed: () {
-                          print('Filtro activado');
-                        },
-                      ),
-                    ],
+                    ),
                   ),
                 ),
 
@@ -109,25 +119,45 @@ class _EntityPageState extends State<EntityPage> {
                   ),
                 ),
 
-                // ListView que muestra los datos
+                // ListView que muestra los datos filtrados
                 Expanded(
                   child: ListView.builder(
-                    itemCount: elementos.length,
+                    itemCount: filteredElements.length, // Usa la lista filtrada
                     itemBuilder: (context, index) {
-                      var elemento = elementos[index];
+                      var elemento = filteredElements[index];
                       return ExpansionTile(
-                        title: Text(elemento['nombre']),
+                        title: Container(
+                          height: 60,
+                          decoration: BoxDecoration(
+                            color: elemento['estado_registro'] == "A"
+                                ? const Color(0xFFA3F7C6)
+                                : (elemento['estado_registro'] == "I"
+                                    ? const Color(0xFFFFC364)
+                                    : const Color(0xFFFF7E64)),
+                            borderRadius:
+                                BorderRadius.circular(12), // Puntas redondeadas
+                          ),
+                          padding:
+                              const EdgeInsets.all(10.0), // Espaciado interno
+                          child: Text(
+                            elemento['nombre'],
+                            style: const TextStyle(
+                              color: Color.fromARGB(
+                                  255, 0, 0, 0), // Color del texto
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16,
+                            ),
+                          ),
+                        ),
                         children: [
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               Text('Código: ${elemento['codigo']}'),
-                              Text(
-                                  'Estado: ${elemento['estado_registro'] }'),
+                              Text('Estado: ${elemento['estado_registro']}'),
                               IconButton(
                                 onPressed: () async {
-                                  final resultado = await 
-                                  Navigator.push(
+                                  final resultado = await Navigator.push(
                                     context,
                                     MaterialPageRoute(
                                       builder: (context) => Edition(
@@ -137,7 +167,7 @@ class _EntityPageState extends State<EntityPage> {
                                       ),
                                     ),
                                   );
-                                  if(resultado==true){
+                                  if (resultado == true) {
                                     _loadData();
                                   }
                                 },
@@ -176,5 +206,12 @@ class _EntityPageState extends State<EntityPage> {
         child: const Icon(Icons.add),
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    searchController.removeListener(_filterList); // Eliminar el listener
+    searchController.dispose(); // Limpiar el controlador
+    super.dispose();
   }
 }

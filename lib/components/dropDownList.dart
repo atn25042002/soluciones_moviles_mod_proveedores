@@ -35,26 +35,10 @@ class _DropdownListState extends State<DropdownList> {
       // Obtén los registros de la base de datos
       print("Obteniendo registros de ");
       print(widget.tableName);
-      records = await dbHelper.getAllRecords(widget.tableName);
+      records = await dbHelper.getAllRecords(widget.tableName,
+          estadoRegistro: "A", orden: "nombre");
+
       print(records);
-
-      /*// Si hay un valor inicial proporcionado, úsalo como valor seleccionado
-      if (widget.initialValue != null) {
-        selectedValue = widget.initialValue; // Asigna el valor inicial recibido
-      } else if (records.isNotEmpty) {
-        // Si no se proporcionó un valor inicial, selecciona el primer registro
-        selectedValue = null;
-      }*/
-
-      /*if (records.isNotEmpty) {
-        if (widget.initialValue != null) {
-          selectedValue = widget.initialValue;
-        } else {
-          selectedValue = null;
-        }
-      } else {
-        selectedValue = null;
-      }*/
 
       if (widget.initialValue != null) {
         // Verificar si el valor inicial está en los registros
