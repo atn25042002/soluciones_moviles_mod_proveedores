@@ -84,6 +84,7 @@ class _EditionState extends State<Edition> {
         const SnackBar(content: Text('Registro actualizado correctamente')),
       );
     } else {
+      nuevosValores['estado_registro']='A';
       // Insertar un nuevo registro
       await dbHelper.insertRecord(widget.nombreTabla, nuevosValores);
       ScaffoldMessenger.of(context).showSnackBar(
@@ -121,7 +122,7 @@ class _EditionState extends State<Edition> {
                   // Formulario dinámico
                   Expanded(
                     child: ListView(
-                      children: camposTabla.map((campo) {
+                      children: (!widget.edicion ? camposTabla.sublist(0, camposTabla.length - 1) : camposTabla).map((campo) {
                         return Padding(
                           padding: const EdgeInsets.symmetric(vertical: 8.0),
                           child: Row(
