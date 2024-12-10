@@ -4,6 +4,14 @@ import 'package:path/path.dart';
 class DatabaseHelper {
   static final DatabaseHelper _instance = DatabaseHelper._internal();
   static Database? _database;
+  Map<String, String> nombresTablas = {
+    'Paises': 'Paises',
+    'CategoriasProductos': 'CategoriasProductos',
+    'MaestroProveedores': 'MaestroProveedores',
+    'pais': 'Paises',
+    'categoria': 'CategoriasProductos',
+    'proveedor': 'MaestroProveedores'
+  };
 
   factory DatabaseHelper() => _instance;
 
@@ -81,8 +89,7 @@ class DatabaseHelper {
     print("esto datos se guarda en DB");
     print(values);
     final db = await database;
-    await db.insert(table, values,
-        conflictAlgorithm: ConflictAlgorithm.replace);
+    await db.insert(table, values, conflictAlgorithm: ConflictAlgorithm.ignore);
   }
 
   // Actualizar un registro (generalizado)
@@ -121,7 +128,8 @@ class DatabaseHelper {
   }
 
 // Cambiar el estado de un registro (activo/inactivo)
-  Future<void> changeRecordState(String table, int id, String nuevoEstado) async {
+  Future<void> changeRecordState(
+      String table, int id, String nuevoEstado) async {
     final db = await database;
     await db.update(
       table,
@@ -150,4 +158,11 @@ Future<Map<String, dynamic>?> getRecordPorCodigo(String table, String codigo) as
   );
   return results.isNotEmpty ? results.first : null;
 }
+
+  String getNombreTablas(String nombre) {
+    print("buscando $nombre");
+    String rpta = nombresTablas[nombre] ?? '';
+    print("Devolviendo $rpta");
+    return nombresTablas[nombre] ?? '';
+  }
 }
