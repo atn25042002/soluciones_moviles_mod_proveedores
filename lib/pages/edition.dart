@@ -88,8 +88,7 @@ class _EditionState extends State<Edition> {
         const SnackBar(content: Text('Registro creado correctamente')),
       );
     }
-
-    Navigator.pop(context);
+    Navigator.pop(context,true);
   }
 
   @override
