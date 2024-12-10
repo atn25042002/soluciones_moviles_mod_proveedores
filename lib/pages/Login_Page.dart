@@ -1,8 +1,50 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
+import 'package:soluciones_moviles_mod_proveedores/database/database_helper.dart';
 
-class LoginPage extends StatelessWidget {
+class LoginPage extends StatefulWidget {
   const LoginPage({Key? key}) : super(key: key);
+
+  @override
+  _LoginPageState createState() => _LoginPageState();
+}
+
+class _LoginPageState extends State<LoginPage> {
+  final TextEditingController _usuarioController = TextEditingController();
+  final TextEditingController _paswordController = TextEditingController();
+  final DatabaseHelper _dbHelper = DatabaseHelper();
+
+  void _login() async {
+    String usuario = _usuarioController.text.trim();
+    String password = _paswordController.text.trim();
+
+    bool esValido = await _dbHelper.validarUsuario(usuario, password);
+
+    if (esValido) {
+      Navigator.pushNamed(context, '/'); 
+    } else {
+      _mostrarError('Usuario o contraseña incorrectos');
+    }
+  }
+
+  void _mostrarError(String mensaje) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('Error'),
+          content: Text(mensaje),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: const Text('OK'),
+            ),
+          ],
+        );
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -24,6 +66,7 @@ class LoginPage extends StatelessWidget {
             ),
             const SizedBox(height: 16),
             TextField(
+              controller: _usuarioController,
               decoration: const InputDecoration(
                 labelText: 'Usuario',
                 hintText: 'Ingrese su usuario',
@@ -31,6 +74,8 @@ class LoginPage extends StatelessWidget {
             ),
             const SizedBox(height: 16),
             TextField(
+              controller: _paswordController,
+              obscureText: true,
               decoration: const InputDecoration(
                 labelText: 'Contraseña',
                 hintText: 'Ingrese su contraseña',
@@ -38,9 +83,7 @@ class LoginPage extends StatelessWidget {
             ),
             const SizedBox(height: 16),
             ElevatedButton(
-              onPressed: () {
-                Navigator.pushNamed(context, 'main');
-              },
+              onPressed: _login,
               child: const Text('Ingresar'),
             ),
           ],

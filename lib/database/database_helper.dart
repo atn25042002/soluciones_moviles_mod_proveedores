@@ -17,6 +17,7 @@ class DatabaseHelper {
 
   Future<Database> _initDatabase() async {
     String path = join(await getDatabasesPath(), 'proveedores.db');
+    await deleteDatabase(path);
     return await openDatabase(
       path,
       version: 1,
@@ -55,6 +56,18 @@ class DatabaseHelper {
         FOREIGN KEY (categoria_id) REFERENCES CategoriasProductos (id),
         FOREIGN KEY (pais_id) REFERENCES Paises (id)
       )
+    ''');
+
+    await db.execute('''
+      CREATE TABLE Usuarios(
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        usuario TEXT NOT NULL UNIQUE,
+        password TEXT NOT NULL
+      )
+    ''');
+
+    await db.execute('''
+      INSERT INTO Usuarios (usuario, password) VALUES ('admin', 'admin')
     ''');
   }
 
@@ -120,5 +133,15 @@ class DatabaseHelper {
       where: 'id = ?',
       whereArgs: [id],
     );
+  }
+
+  Future<bool> validarUsuario(String usuario, String pas) async {
+    final db = await database;
+    final res = await db.query(
+      'Usuarios',
+      where: 'usuario = ? AND password = ?',
+      whereArgs: [usuario, pas],
+    );
+    return res.isNotEmpty; // Devuelve true si el usuario y contraseña coinciden
   }
 }
