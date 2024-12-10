@@ -26,6 +26,7 @@ class _EntityPageState extends State<EntityPage> {
 
   Future<void> _loadData() async {
     List<Map<String, dynamic>> data;
+    print("todo esto se cargara");
     String nombretabla;
     switch (widget.nombre) {
       case 'Paises':
@@ -45,6 +46,7 @@ class _EntityPageState extends State<EntityPage> {
         data = [];
         break;
     }
+    print(data);
     setState(() {
       elementos = data;
       tabla = nombretabla;
@@ -121,7 +123,7 @@ class _EntityPageState extends State<EntityPage> {
                             children: [
                               Text('Código: ${elemento['codigo']}'),
                               Text(
-                                  'Estado: ${elemento['estado_registro'] == 1 ? 'Activo' : 'Inactivo'}'),
+                                  'Estado: ${elemento['estado_registro'] }'),
                               IconButton(
                                 onPressed: () {
                                   Navigator.push(

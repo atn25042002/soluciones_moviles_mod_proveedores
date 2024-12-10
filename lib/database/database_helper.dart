@@ -30,7 +30,7 @@ class DatabaseHelper {
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         codigo TEXT NOT NULL UNIQUE,
         nombre TEXT NOT NULL,
-        estado_registro INTEGER NOT NULL
+        estado_registro TEXT NOT NULL
       )
     ''');
 
@@ -39,7 +39,7 @@ class DatabaseHelper {
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         codigo TEXT NOT NULL UNIQUE,
         nombre TEXT NOT NULL,
-        estado_registro INTEGER NOT NULL
+        estado_registro TEXT NOT NULL
       )
     ''');
 
@@ -51,7 +51,7 @@ class DatabaseHelper {
         ruc TEXT NOT NULL,
         categoria_id INTEGER NOT NULL,
         pais_id INTEGER NOT NULL,
-        estado_registro INTEGER NOT NULL,
+        estado_registro TEXT NOT NULL,
         FOREIGN KEY (categoria_id) REFERENCES CategoriasProductos (id),
         FOREIGN KEY (pais_id) REFERENCES Paises (id)
       )
@@ -78,6 +78,8 @@ class DatabaseHelper {
 
   // Insertar un registro (generalizado)
   Future<void> insertRecord(String table, Map<String, dynamic> values) async {
+    print("esto datos se guarda en DB");
+    print(values);
     final db = await database;
     await db.insert(table, values,
         conflictAlgorithm: ConflictAlgorithm.replace);
@@ -109,7 +111,7 @@ class DatabaseHelper {
 
 // Ver todos los registros (filtrados por estado si es necesario)
   Future<List<Map<String, dynamic>>> getAllRecords(String table,
-      {int? estadoRegistro}) async {
+      {String? estadoRegistro}) async {
     final db = await database;
     return await db.query(
       table,
@@ -119,7 +121,7 @@ class DatabaseHelper {
   }
 
 // Cambiar el estado de un registro (activo/inactivo)
-  Future<void> changeRecordState(String table, int id, int nuevoEstado) async {
+  Future<void> changeRecordState(String table, int id, String nuevoEstado) async {
     final db = await database;
     await db.update(
       table,

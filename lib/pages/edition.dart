@@ -74,6 +74,8 @@ class _EditionState extends State<Edition> {
     controllers.forEach((key, controller) {
       nuevosValores[key] = controller.text;
     });
+    print("los valores a guarda son");
+    print(nuevosValores);
 
     if (widget.edicion) {
       // Actualizar registro existente
