@@ -51,6 +51,17 @@ class CategoriaProducto {
   });
 }
 
+class Usuario {
+  String usuario;
+  String password;
+
+  // Constructor para inicializar los campos
+  Usuario({
+    required this.usuario,
+    required this.password,
+  });
+}
+
 class DB {
   // Lista simulada de proveedores
   static List<Proveedor> proveedores = [
@@ -230,5 +241,20 @@ class DB {
       }
     }
     return null; // Si no se encuentra la categoría, devolver null
+  }
+
+  // Lista simulada de usuarios
+  static List<Usuario> usuarios = [
+    Usuario(usuario: 'admin', password: 'admin'),
+  ];
+
+  // Método para verificar las credenciales de un usuario
+  static bool verificarCredenciales(String usuario, String contrasena) {
+    for (var user in usuarios) {
+      if (user.usuario == usuario && user.password == contrasena) {
+        return true;
+      }
+    }
+    return false;
   }
 }

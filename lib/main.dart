@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:soluciones_moviles_mod_proveedores/components/roundedButton.dart';
+import 'package:soluciones_moviles_mod_proveedores/database/database_helper.dart';
+import 'package:soluciones_moviles_mod_proveedores/pages/Login_Page.dart';
+import 'package:soluciones_moviles_mod_proveedores/pages/entityPage.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -17,6 +20,11 @@ class MainApp extends StatelessWidget {
       theme: ThemeData(
         fontFamily: 'Roboto',
       ),
+      routes:{
+        'main': (_) => const HomePage(),
+        'login': (_) => LoginPage(),
+      },
+      initialRoute: 'login',
     );
   }
 }
