@@ -69,6 +69,23 @@ class _EditionState extends State<Edition> {
     }
   }
 
+Future<Map<String, dynamic>?> recuperarUnRegistro(String codigoSync) async {
+  try {
+    // Llamamos al método getRecordPorCodigo de dbHelper
+    Map<String, dynamic>? record = await dbHelper.getRecordPorCodigo(widget.nombreTabla, codigoSync);
+    print("esto se recupero");
+    print(record);
+    
+    return record; // Devuelve el registro encontrado o null si no se encuentra
+  } catch (e) {
+    print('Error al recuperar el registro: $e');
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Error al recuperar el registro: $e')),
+    );
+    return null; // Si ocurre un error, también devuelve null
+  }
+}
+
   void grabarCambios() async {
     Map<String, dynamic> nuevosValores = {};
     controllers.forEach((key, controller) {
@@ -83,20 +100,51 @@ class _EditionState extends State<Edition> {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Registro actualizado correctamente')),
       );
+    Navigator.pop(context,true);
     } else {
-      nuevosValores['estado_registro']='A';
+      var recod = await recuperarUnRegistro(nuevosValores['codigo']);
+      print("hay duplicado");
+      print(recod);
+      if(recod!=null){
+        _showDuplicateRecordDialog();
+      }
+      else{
+
+      nuevosValores['estado_registro'] = 'A';
       // Insertar un nuevo registro
       await dbHelper.insertRecord(widget.nombreTabla, nuevosValores);
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Registro creado correctamente')),
       );
+      Navigator.pop(context, true);
+      }
     }
-    Navigator.pop(context,true);
   }
-  void eliminarRecord() async{
-    await dbHelper.changeRecordState(widget.nombreTabla, widget.id,"*" );
-    Navigator.pop(context,true);
+
+  void eliminarRecord() async {
+    await dbHelper.changeRecordState(widget.nombreTabla, widget.id, "*");
+    Navigator.pop(context, true);
   }
+  // Función para mostrar un diálogo de error si hay un registro duplicado
+void _showDuplicateRecordDialog() {
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return AlertDialog(
+        title: const Text("Error"),
+        content: const Text("No puede haber un registro duplicado con el mismo código."),
+        actions: <Widget>[
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop(); // Cerrar el diálogo
+            },
+            child: const Text("Aceptar"),
+          ),
+        ],
+      );
+    },
+  );
+}
 
   @override
   Widget build(BuildContext context) {
@@ -126,7 +174,10 @@ class _EditionState extends State<Edition> {
                   // Formulario dinámico
                   Expanded(
                     child: ListView(
-                      children: (!widget.edicion ? camposTabla.sublist(0, camposTabla.length - 1) : camposTabla).map((campo) {
+                      children: (!widget.edicion
+                              ? camposTabla.sublist(0, camposTabla.length - 1)
+                              : camposTabla)
+                          .map((campo) {
                         return Padding(
                           padding: const EdgeInsets.symmetric(vertical: 8.0),
                           child: Row(
@@ -167,10 +218,12 @@ class _EditionState extends State<Edition> {
                         },
                         child: const Text('Salir'),
                       ),
-                      if(widget.edicion)
-                      ElevatedButton(onPressed: (){
-                          eliminarRecord();
-                      }, child: const Text("Eliminar"))
+                      if (widget.edicion)
+                        ElevatedButton(
+                            onPressed: () {
+                              eliminarRecord();
+                            },
+                            child: const Text("Eliminar"))
                     ],
                   ),
                 ],

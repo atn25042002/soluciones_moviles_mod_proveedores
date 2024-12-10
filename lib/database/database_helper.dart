@@ -139,4 +139,15 @@ class DatabaseHelper {
         await db.rawQuery('PRAGMA table_info($table);');
     return fields;
   }
+  // Obtener un registro por su código
+Future<Map<String, dynamic>?> getRecordPorCodigo(String table, String codigo) async {
+  final db = await database;
+  final List<Map<String, dynamic>> results = await db.query(
+    table,
+    where: 'codigo = ?',
+    whereArgs: [codigo],
+    limit: 1,
+  );
+  return results.isNotEmpty ? results.first : null;
+}
 }
