@@ -125,7 +125,8 @@ class _EntityPageState extends State<EntityPage> {
                               Text(
                                   'Estado: ${elemento['estado_registro'] }'),
                               IconButton(
-                                onPressed: () {
+                                onPressed: () async {
+                                  final resultado = await 
                                   Navigator.push(
                                     context,
                                     MaterialPageRoute(
@@ -136,6 +137,9 @@ class _EntityPageState extends State<EntityPage> {
                                       ),
                                     ),
                                   );
+                                  if(resultado==true){
+                                    _loadData();
+                                  }
                                 },
                                 icon: const Icon(Icons.edit),
                               ),
@@ -151,26 +155,25 @@ class _EntityPageState extends State<EntityPage> {
 
       // Botón flotante para agregar un nuevo registro
       floatingActionButton: FloatingActionButton(
-         onPressed: () async {
-    final resultado = await Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => Edition(
-          nombreTabla: tabla,
-          id: -1,
-          edicion: false,
-        ),
-      ),
-    );
+        onPressed: () async {
+          final resultado = await Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => Edition(
+                nombreTabla: tabla,
+                id: -1,
+                edicion: false,
+              ),
+            ),
+          );
 
-    // Si hubo cambios, recargar los datos
-    if (resultado == true) {
-      _loadData();
-    }
-  },
+          // Si hubo cambios, recargar los datos
+          if (resultado == true) {
+            _loadData();
+          }
+        },
         backgroundColor: widget.color,
         child: const Icon(Icons.add),
-
       ),
     );
   }

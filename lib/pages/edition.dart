@@ -83,6 +83,7 @@ class _EditionState extends State<Edition> {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Registro actualizado correctamente')),
       );
+    Navigator.pop(context,true);
     } else {
       nuevosValores['estado_registro']='A';
       // Insertar un nuevo registro
@@ -90,8 +91,8 @@ class _EditionState extends State<Edition> {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Registro creado correctamente')),
       );
-    }
     Navigator.pop(context,true);
+    }
   }
 
   @override
