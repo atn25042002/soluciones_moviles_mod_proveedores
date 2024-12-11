@@ -110,6 +110,7 @@ class _EditionState extends State<Edition> {
 
     if (widget.edicion) {
       // Actualizar registro existente
+      nuevosValores['estado_registro'] = camposRecuperados['estado_registro'];
       await dbHelper.updateRecord(widget.nombreTabla, widget.id, nuevosValores);
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Registro actualizado correctamente')),
@@ -194,11 +195,10 @@ class _EditionState extends State<Edition> {
                     ),
                   ),
                   const SizedBox(height: 16),
-
                   // Formulario dinámico
                   Expanded(
                     child: ListView(
-                      children: (!widget.edicion
+                      children: (true
                               ? camposTabla.sublist(0, camposTabla.length - 1)
                               : camposTabla)
                           .map((campo) {
@@ -245,7 +245,19 @@ class _EditionState extends State<Edition> {
                       }).toList(),
                     ),
                   ),
-
+                  Row(children: [
+                    Text("Estado de Registro: ",
+                        style: const TextStyle(fontSize: 16)),
+                    const SizedBox(width: 20),
+                    Text(
+                        widget.edicion
+                            ? camposRecuperados['estado_registro']
+                            : 'A',
+                        style: const TextStyle(fontSize: 16)),
+                  ]),
+                  const SizedBox(
+                    height: 80,
+                  ),
                   // Botones de acción
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
