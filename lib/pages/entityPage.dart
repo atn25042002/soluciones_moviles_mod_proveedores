@@ -21,6 +21,9 @@ class _EntityPageState extends State<EntityPage> {
   final TextEditingController searchController =
       TextEditingController(); // Controlador de búsqueda
 
+  String modoBusqueda = 'nombre'; // Opción seleccionada inicialmente
+  String modoOrden = 'nombre';
+
   @override
   void initState() {
     super.initState();
@@ -66,7 +69,7 @@ class _EntityPageState extends State<EntityPage> {
     String query = searchController.text.toLowerCase();
     setState(() {
       filteredElements = elementos.where((elemento) {
-        return elemento['nombre']
+        return elemento[modoBusqueda]
             .toLowerCase()
             .contains(query); // Filtra por el nombre
       }).toList();
@@ -96,14 +99,82 @@ class _EntityPageState extends State<EntityPage> {
                 // Barra de búsqueda
                 Padding(
                   padding: const EdgeInsets.all(16.0),
-                  child: Expanded(
-                    child: TextField(
-                      controller: searchController, // Asocia el controlador
-                      decoration: InputDecoration(
-                        hintText: "🔍 Buscar ${widget.nombre}...",
-                        border: const OutlineInputBorder(),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: TextField(
+                          controller: searchController, // Asocia el controlador
+                          decoration: InputDecoration(
+                            hintText: "🔍 Buscar ${widget.nombre}...",
+                            border: const OutlineInputBorder(),
+                          ),
+                        ),
                       ),
-                    ),
+                      PopupMenuButton<String>(
+                        onSelected: (value) {
+                          setState(() {
+                            modoBusqueda = value;
+                            _filterList();
+                          });
+                        },
+                        itemBuilder: (context) => [
+                          PopupMenuItem<String>(
+                            enabled:
+                                false, // Deshabilita la opción para que actúe como título
+                            child: Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Text(
+                                'Busqueda por:',
+                                style: TextStyle(fontWeight: FontWeight.bold),
+                              ),
+                            ),
+                          ),
+                          PopupMenuItem(value: 'nombre', child: Text('Nombre')),
+                          PopupMenuItem(value: 'codigo', child: Text('Codigo')),
+                          PopupMenuItem(
+                              value: 'estado_registro',
+                              child: Text('Estado de Registro')),
+                        ],
+                        icon: Icon(
+                          Icons.manage_search,
+                          size: 30,
+                        ), // Ícono que activa el menú
+                      ),
+                      PopupMenuButton<String>(
+                        onSelected: (value) {
+                          setState(() {
+                            modoOrden = value;
+                            filteredElements.sort((a, b) {
+                              return a[modoOrden]
+                                  .toLowerCase()
+                                  .compareTo(b[modoOrden].toLowerCase());
+                            });
+                          });
+                        },
+                        itemBuilder: (context) => [
+                          PopupMenuItem<String>(
+                            enabled:
+                                false, // Deshabilita la opción para que actúe como título
+                            child: Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Text(
+                                'Ordenar por:',
+                                style: TextStyle(fontWeight: FontWeight.bold),
+                              ),
+                            ),
+                          ),
+                          PopupMenuItem(value: 'nombre', child: Text('Nombre')),
+                          PopupMenuItem(value: 'codigo', child: Text('Codigo')),
+                          PopupMenuItem(
+                              value: 'estado_registro',
+                              child: Text('Estado de Registro')),
+                        ],
+                        icon: Icon(
+                          Icons.sort_by_alpha_rounded,
+                          size: 30,
+                        ), // Ícono que activa el menú
+                      ),
+                    ],
                   ),
                 ),
 

@@ -78,22 +78,23 @@ class _EditionState extends State<Edition> {
     }
   }
 
-Future<Map<String, dynamic>?> recuperarUnRegistro(String codigoSync) async {
-  try {
-    // Llamamos al método getRecordPorCodigo de dbHelper
-    Map<String, dynamic>? record = await dbHelper.getRecordPorCodigo(widget.nombreTabla, codigoSync);
-    print("esto se recupero");
-    print(record);
-    
-    return record; // Devuelve el registro encontrado o null si no se encuentra
-  } catch (e) {
-    print('Error al recuperar el registro: $e');
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Error al recuperar el registro: $e')),
-    );
-    return null; // Si ocurre un error, también devuelve null
+  Future<Map<String, dynamic>?> recuperarUnRegistro(String codigoSync) async {
+    try {
+      // Llamamos al método getRecordPorCodigo de dbHelper
+      Map<String, dynamic>? record =
+          await dbHelper.getRecordPorCodigo(widget.nombreTabla, codigoSync);
+      print("esto se recupero");
+      print(record);
+
+      return record; // Devuelve el registro encontrado o null si no se encuentra
+    } catch (e) {
+      print('Error al recuperar el registro: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error al recuperar el registro: $e')),
+      );
+      return null; // Si ocurre un error, también devuelve null
+    }
   }
-}
 
   void grabarCambios() async {
     Map<String, dynamic> nuevosValores = {};
@@ -113,23 +114,21 @@ Future<Map<String, dynamic>?> recuperarUnRegistro(String codigoSync) async {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Registro actualizado correctamente')),
       );
-    Navigator.pop(context,true);
+      Navigator.pop(context, true);
     } else {
       var recod = await recuperarUnRegistro(nuevosValores['codigo']);
       print("hay duplicado");
       print(recod);
-      if(recod!=null){
+      if (recod != null) {
         _showDuplicateRecordDialog();
-      }
-      else{
-
-      nuevosValores['estado_registro'] = 'A';
-      // Insertar un nuevo registro
-      await dbHelper.insertRecord(widget.nombreTabla, nuevosValores);
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Registro creado correctamente')),
-      );
-      Navigator.pop(context, true);
+      } else {
+        nuevosValores['estado_registro'] = 'A';
+        // Insertar un nuevo registro
+        await dbHelper.insertRecord(widget.nombreTabla, nuevosValores);
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Registro creado correctamente')),
+        );
+        Navigator.pop(context, true);
       }
     }
   }
@@ -138,26 +137,38 @@ Future<Map<String, dynamic>?> recuperarUnRegistro(String codigoSync) async {
     await dbHelper.changeRecordState(widget.nombreTabla, widget.id, "*");
     Navigator.pop(context, true);
   }
+
+  void activarRecord() async {
+    await dbHelper.changeRecordState(widget.nombreTabla, widget.id, "A");
+    Navigator.pop(context, true);
+  }
+
+  void desactivarRecord() async {
+    await dbHelper.changeRecordState(widget.nombreTabla, widget.id, "I");
+    Navigator.pop(context, true);
+  }
+
   // Función para mostrar un diálogo de error si hay un registro duplicado
-void _showDuplicateRecordDialog() {
-  showDialog(
-    context: context,
-    builder: (BuildContext context) {
-      return AlertDialog(
-        title: const Text("Error"),
-        content: const Text("No puede haber un registro duplicado con el mismo código."),
-        actions: <Widget>[
-          TextButton(
-            onPressed: () {
-              Navigator.of(context).pop(); // Cerrar el diálogo
-            },
-            child: const Text("Aceptar"),
-          ),
-        ],
-      );
-    },
-  );
-}
+  void _showDuplicateRecordDialog() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text("Error"),
+          content: const Text(
+              "No puede haber un registro duplicado con el mismo código."),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // Cerrar el diálogo
+              },
+              child: const Text("Aceptar"),
+            ),
+          ],
+        );
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -240,21 +251,42 @@ void _showDuplicateRecordDialog() {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       ElevatedButton(
-                        onPressed: grabarCambios,
-                        child: const Text('Grabar'),
-                      ),
-                      ElevatedButton(
-                        onPressed: () {
-                          Navigator.pop(context);
-                        },
-                        child: const Text('Salir'),
-                      ),
+                          onPressed: grabarCambios,
+                          child: const Icon(
+                            Icons.save,
+                            size: 50,
+                          )),
+                      if (widget.edicion)
+                        ElevatedButton(
+                            onPressed: () {
+                              camposRecuperados['estado_registro'] == 'A'
+                                  ? desactivarRecord()
+                                  : activarRecord();
+                            },
+                            child: Icon(
+                              camposRecuperados['estado_registro'] == 'A'
+                                  ? Icons.visibility_off
+                                  : Icons.visibility,
+                              size: 50,
+                            )),
                       if (widget.edicion)
                         ElevatedButton(
                             onPressed: () {
                               eliminarRecord();
                             },
-                            child: const Text("Eliminar"))
+                            child: const Icon(
+                              Icons.delete_forever,
+                              size: 50,
+                            )),
+                      ElevatedButton(
+                        onPressed: () {
+                          Navigator.pop(context);
+                        },
+                        child: const Icon(
+                          Icons.exit_to_app,
+                          size: 50,
+                        ),
+                      ),
                     ],
                   ),
                 ],
